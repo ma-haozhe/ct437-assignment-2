@@ -12,7 +12,6 @@
 # '0b' in python is used as a prefix to declare binary numbers.
 seed1 = 0b11001010110011001010011010110010
 str_seed1 = '11001010110011001010011010110010'
-#print(len(str_seed1))
 #the length of the seed is 32 bits
 seed2 = 0b00110110111100101001010010011010
 
@@ -31,8 +30,18 @@ def feed_back_func(seed1, seed2):
         # 1. extract the most left digit in in the seed (most significant digit) and only take that digit
         # 2. extract the digit in the middle of the seed (both of them used '& 1' to do that)
         # 3. do bitwise XOR of the two by using '^' and get our first bit
-        print(bit1)
+        #print('seed1 = ', bin(seed1))
         bit2 = ((seed1 >> 31) & 1) ^ ((seed1 >> 3) & 1) ^ ((seed1 >> 10) & 1) & 1
         # this second feedback function is slightly different from the first one, 
         # it uses XOR from three bits in the seed2, the most left, the third on the right and the 10th on the right.
         
+        #print('seed2 = ', bin(seed2))
+        seed1 = ((seed1 << 1) ^ ((seed1 >> 31) & 1)) & 0b11111111111111111111111111111111
+        seed2 = ((seed2 << 1) ^ ((seed2 >> 31) & 1)) & 0xffffffff
+        # shift left 1 bit for both seed1 and seed2.
+
+        key.append(bit1 ^ bit2)
+        #print(key)
+    return key
+
+feed_back_func(seed1, seed2)
