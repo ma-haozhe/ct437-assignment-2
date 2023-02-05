@@ -15,6 +15,8 @@ str_seed1 = '11001010110011001010011010110010'
 seed2 = 0b00110110111100101001010010011010
 
 # define the function that calculate the bit
+
+
 def feed_back_func(seed1, seed2, n):
     key = []
     for i in range(n):
@@ -24,8 +26,8 @@ def feed_back_func(seed1, seed2, n):
         # 2. extract the digit in the middle of the seed (both of them used '& 1' to do that)
         # 3. do bitwise XOR of the two by using '^' and get our first bit
         # print('seed1 = ', bin(seed1))
-        bit2 = ((seed1 >> 31) & 1) ^ (
-            (seed1 >> 3) & 1) ^ ((seed1 >> 10) & 1) & 1
+        bit2 = ((seed2 >> 31) & 1) ^ (
+            (seed2 >> 3) & 1) ^ ((seed2 >> 10) & 1) & 1
         # this second feedback function is slightly different from the first one,
         # it uses XOR from three bits in the seed2, the most left, the third on the right and the 10th on the right.
 
@@ -40,7 +42,6 @@ def feed_back_func(seed1, seed2, n):
         # shift left 1 bit for both seed1 and seed2 and add the shifted bit to their right
         # The length of seed1 and seed2 is limited to 32 bits using & (0xFFFFFFFF)
         # 0xFFFFFFFF is in hex, its the same as 0b111111...11 (32 '1's) in binary.
-
         key.append(bit1 ^ bit2)
         # bitwise XOR of bit1 and bit2 is appended to the list "key".
     return key
@@ -63,7 +64,9 @@ def encryption(plaintext, key):
         ciphertext += chr(exor)
     return ciphertext
 
-#decryption is similar to encryption, just do everything in reverse
+# decryption is similar to encryption, just do everything in reverse
+
+
 def decryption(ciphertext, key):
     plaintext = ''
     for i in range(len(ciphertext)):
@@ -73,6 +76,7 @@ def decryption(ciphertext, key):
         plaintext += chr(exor)
     return plaintext
 
+
 # call feedback function to generate a key with length of 40.
 key = feed_back_func(seed1, seed2, 40)
 print(key)
@@ -80,7 +84,7 @@ print(key)
 encrypted = encryption("hello hello this is haozhe", key)
 print(encrypted)
 
-# "iemln hdmln uiis!hr!h`nzie" is the cipher text we get from encryption. 
+# "iemln hdmln uiis!hr!h`nzie" is the cipher text we get from encryption.
 # Decrypt the encrypted ciphertext using the key
-decrypted = decryption("iemln hdmln uiis!hr!h`nzie", key)
+decrypted = decryption("ielmn!idlmo uihs!ir haozhd", key)
 print(decrypted)
