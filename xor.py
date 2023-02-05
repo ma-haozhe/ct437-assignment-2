@@ -5,3 +5,8 @@ shifted = (seed1<<1)&1
 print(bin(seed1))
 print(bin(shifted))
 print(len(str(bin(shifted))))
+print(bin(0xFFFFFFF))
+
+#0b10110010101100110010100110101100
+#0b110101100101100101011001100101
+#0b11111111111111111111111111111111
