@@ -13,18 +13,11 @@ seed1 = 0b11001010110011001010011010110010
 str_seed1 = '11001010110011001010011010110010'
 # the length of the seed is 32 bits
 seed2 = 0b00110110111100101001010010011010
-# print(type(seed1), type(seed2))
-# Here are some experiment I did on how shifting operation works.
-# shifted = seed1>>2
-# print(bin(seed1))
-# print(bin(shifted))
-# print(len(str(bin(shifted))))
-
 
 # define the function that calculate the bit
-def feed_back_func(seed1, seed2):
+def feed_back_func(seed1, seed2, n):
     key = []
-    for i in range(100):
+    for i in range(n):
         bit1 = ((seed1 >> 31) & 1) ^ ((seed1 >> 16) & 1) & 1
         # so the line above did several things, it is our first feedback function
         # 1. extract the most left digit in in the seed (most significant digit) and only take that digit
@@ -44,24 +37,33 @@ def feed_back_func(seed1, seed2):
             seed1 >> (len(str(str_seed1)) - 1))) & (0xFFFFFFFF)
         seed2 = ((seed2 << 1) | (
             seed2 >> (len(str(str_seed1)) - 1))) & (0xFFFFFFFF)
-        # shift left 1 bit for both seed1 and seed2.
-        # print('seed1 = ', bin(seed1), 'length of seed1 =', len(str(bin(seed1))) )
-        # print('seed2 = ', bin(seed2), 'length of seed2 =', len(str(bin(seed2))) )
+        # shift left 1 bit for both seed1 and seed2 and add the shifted bit to their right
+        # The length of seed1 and seed2 is limited to 32 bits using & (0xFFFFFFFF)
+        # 0xFFFFFFFF is in hex, its the same as 0b111111...11 (32 '1's) in binary.
+
         key.append(bit1 ^ bit2)
-        # print(key)
+        # bitwise XOR of bit1 and bit2 is appended to the list "key".
     return key
 
 
+# encryption returns a ciphertext string which is the XOR of each character in the plaintext and the corresponding element in the key list
 def encryption(plaintext, key):
     ciphertext = ''
+    # Iterate over each character in the plaintext string
     for i in range(len(plaintext)):
+        # Get the current plaintext character
         plain = plaintext[i]
+        # Convert the plaintext character to its integer representation using 'ord'
+        # learnt: it can be similar to 'bytes()' but 'ord' only works with single character
         plain_in_int = ord(plain)
+        # XOR the plaintext character with the corresponding key element to encrypt
         exor = plain_in_int ^ key[i]
+        # convert the xor result back to a character and append it to the ciphertext string
+        # you can't use str cause it will give you a bunch of binary numbers.
         ciphertext += chr(exor)
     return ciphertext
 
-
+#decryption is similar to encryption, just do everything in reverse
 def decryption(ciphertext, key):
     plaintext = ''
     for i in range(len(ciphertext)):
@@ -71,16 +73,14 @@ def decryption(ciphertext, key):
         plaintext += chr(exor)
     return plaintext
 
-
-key = feed_back_func(seed1, seed2)
+# call feedback function to generate a key with length of 40.
+key = feed_back_func(seed1, seed2, 40)
 print(key)
 
 encrypted = encryption("hello hello this is haozhe", key)
 print(encrypted)
 
-key = feed_back_func(seed1, seed2)
-print(key)
-encrypted = encryption("hello hello this is haozhe", key)
-
+# "iemln hdmln uiis!hr!h`nzie" is the cipher text we get from encryption. 
+# Decrypt the encrypted ciphertext using the key
 decrypted = decryption("iemln hdmln uiis!hr!h`nzie", key)
 print(decrypted)
